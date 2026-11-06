@@ -1,0 +1,113 @@
+from pathlib import Path
+
+html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Little Love Note</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #fff7fa;
+      background:
+        radial-gradient(circle at 20% 20%, #ffb6c9 0, transparent 30%),
+        radial-gradient(circle at 80% 75%, #9d6a9f 0, transparent 35%),
+        linear-gradient(135deg, #4b183f, #a83f68 55%, #e58a9e);
+    }
+    .card {
+      position: relative;
+      width: min(90vw, 560px);
+      padding: 58px 34px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 28px;
+      background: rgba(255,255,255,.13);
+      box-shadow: 0 24px 80px rgba(40, 0, 30, .3);
+      backdrop-filter: blur(12px);
+      animation: appear 1s ease both;
+    }
+    .tiny { letter-spacing: .28em; text-transform: uppercase; font: 11px Arial, sans-serif; opacity: .85; }
+    h1 { margin: 18px 0 12px; font-size: clamp(42px, 9vw, 68px); font-weight: normal; }
+    .heart {
+      display: inline-block;
+      color: #ffd6e1;
+      font-size: 72px;
+      filter: drop-shadow(0 8px 18px rgba(255, 160, 190, .45));
+      animation: beat 1.25s ease-in-out infinite;
+    }
+    p { max-width: 390px; margin: 0 auto; font-size: 18px; line-height: 1.7; opacity: .94; }
+    button {
+      margin-top: 30px;
+      padding: 13px 23px;
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 999px;
+      color: #74294d;
+      background: #fff0f5;
+      font: 600 14px Arial, sans-serif;
+      cursor: pointer;
+      transition: transform .2s, background .2s;
+    }
+    button:hover { transform: translateY(-3px); background: white; }
+    #extra { min-height: 28px; margin-top: 20px; font-style: italic; color: #ffe1eb; }
+    .float {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(255,255,255,.55);
+      pointer-events: none;
+      animation: floatUp linear forwards;
+    }
+    @keyframes beat { 0%,100% { transform: scale(1); } 14% { transform: scale(1.14); } 28% { transform: scale(1); } 42% { transform: scale(1.08); } }
+    @keyframes appear { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
+    @keyframes floatUp { to { transform: translateY(-110vh) rotate(25deg); opacity: 0; } }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="tiny">a little reminder</div>
+    <div class="heart">♥</div>
+    <h1>I love you.</h1>
+    <p>
+      In a world full of ordinary moments, you make the little things feel
+      a bit more magical. Here's a tiny page just to remind you that you're
+      appreciated more than words can say.
+    </p>
+    <button onclick="showNote()">Open your little note</button>
+    <div id="extra" aria-live="polite"></div>
+  </main>
+
+  <script>
+    const notes = [
+      "You make the world feel a little softer. ♡",
+      "If this page could give you a hug, it would. ♡",
+      "You're someone's favorite notification. ♡",
+      "Just in case you forgot: you're wonderful. ♡"
+    ];
+    function showNote() {
+      document.getElementById("extra").textContent =
+        notes[Math.floor(Math.random() * notes.length)];
+      for (let i = 0; i < 7; i++) {
+        const heart = document.createElement("span");
+        heart.className = "float";
+        heart.textContent = Math.random() > .35 ? "♥" : "♡";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = (14 + Math.random() * 24) + "px";
+        heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 8500);
+      }
+    }
+  </script>
+</body>
+</html>
+"""
+
+path = Path("/mnt/data/love_note.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
