@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Little Question 💗</title>
+<style>
+  :root { --pink:#ff6f9f; --deep:#8e315e; }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; min-height:100vh; overflow:hidden; display:grid; place-items:center;
+    font-family: "Trebuchet MS", Arial, sans-serif; color:#71334f;
+    background:linear-gradient(135deg,#ffe0eb,#ffd0e1 45%,#f6c8f1);
+  }
+  .sparkle { position:fixed; pointer-events:none; opacity:.65; animation: drift 8s linear infinite; }
+  @keyframes drift { from{transform:translateY(110vh) rotate(0)} to{transform:translateY(-15vh) rotate(300deg)} }
+  .card {
+    width:min(92vw,560px); min-height:440px; padding:42px 26px 36px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; position:relative; z-index:2;
+    border:2px solid rgba(255,255,255,.85); border-radius:32px;
+    background:rgba(255,255,255,.62); backdrop-filter:blur(14px);
+    box-shadow:0 22px 70px rgba(157,65,108,.18);
+  }
+  .eyebrow { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:#b45b80; }
+  .bear { font-size:76px; margin:12px 0 4px; animation:bob 2s ease-in-out infinite; }
+  @keyframes bob { 50%{transform:translateY(-9px) rotate(3deg)} }
+  h1 { margin:8px 0 10px; font-family:Georgia,serif; font-size:clamp(32px,7vw,48px); color:#9d3f68; }
+  p { max-width:390px; line-height:1.65; margin:0 auto 25px; color:#89516a; }
+  .buttons { display:flex; gap:18px; align-items:center; justify-content:center; flex-wrap:wrap; width:100%; min-height:64px; }
+  button {
+    border:0; border-radius:999px; padding:15px 30px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:transform .18s, box-shadow .18s, background .18s;
+    box-shadow:0 7px 18px rgba(143,55,95,.15);
+  }
+  button:focus-visible { outline:3px solid #8d3b65; outline-offset:4px; }
+  #yes { background:#ff6f9f; color:white; }
+  #yes:hover { transform:scale(1.08); background:#f3548c; box-shadow:0 10px 24px #ff9fbd88; }
+  #no {
+    background:#fff; color:#a75b7b; position:relative;
+    transition:left .18s ease, top .18s ease, transform .18s ease;
+  }
+  #message { min-height:26px; margin-top:20px; font-size:14px; color:#a34c74; font-style:italic; }
+  .hidden { display:none !important; }
+  #success { display:none; animation:pop .6s cubic-bezier(.2,1.5,.5,1) both; }
+  #success .big-heart { font-size:90px; color:#ff5c91; animation:heartbeat 1s infinite; }
+  @keyframes heartbeat { 50%{transform:scale(1.18)} }
+  @keyframes pop { from{opacity:0;transform:scale(.7)} to{opacity:1;transform:scale(1)} }
+  .again { margin-top:18px; background:#fff; color:#a34c74; font-size:13px; padding:11px 20px; }
+  .confetti { position:fixed; top:-20px; z-index:5; pointer-events:none; animation:fall 3.2s linear forwards; }
+  @keyframes fall { to{transform:translateY(110vh) rotate(720deg);opacity:0} }
+  .footer { position:fixed; bottom:13px; color:#a85e7e; opacity:.75; font-size:11px; letter-spacing:1px; }
+  @media(max-width:420px) { .card{min-height:410px;padding:30px 18px} button{padding:14px 25px} }
+</style>
+</head>
+<body>
+<div class="card">
+  <section id="question">
+    <div class="eyebrow">a very important question</div>
+    <div class="bear">🧸💗</div>
+    <h1>Do you love me?</h1>
+    <p>I've been meaning to ask you something...<br>Choose wisely. hehe ♡</p>
+    <div class="buttons">
+      <button id="yes" type="button">YES!! 💕</button>
+      <button id="no" type="button">No 🙃</button>
+    </div>
+    <div id="message" aria-live="polite">Psst... there's only one correct answer.</div>
+  </section>
+  <section id="success">
+    <div class="big-heart">💖</div>
+    <h1>YAYYYYY!!</h1>
+    <p>Best answer ever. You've officially made this little webpage very happy. ♡</p>
+    <div style="font-size:35px">🥹💗🧸💐</div>
+    <button class="again" id="replay" type="button">Replay the moment ↻</button>
+  </section>
+</div>
+<div class="footer">MADE WITH A LITTLE EXTRA LOVE ♡</div>
+<script>
+  const noBtn = document.getElementById('no');
+  const yesBtn = document.getElementById('yes');
+  const question = document.getElementById('question');
+  const success = document.getElementById('success');
+  const message = document.getElementById('message');
+  const card = document.querySelector('.card');
+  const reactions = [
+    "Wait—where are you going? 😭",
+    "Nope, you can't catch me!",
+    "Are you suuuure? 🥺",
+    "The button said: absolutely not.",
+    "Hehe, try again 💗",
+    "That wasn't very romantic of you..."
+  ];
+  let attempts = 0;
+
+  function moveNo() {
+    attempts++;
+    message.textContent = reactions[(attempts - 1) % reactions.length];
+    // Keep the runaway button inside the card, while making each escape feel playful.
+    const area = card.getBoundingClientRect();
+    const btn = noBtn.getBoundingClientRect();
+    const maxX = Math.max(0, area.width - btn.width - 34);
+    const maxY = 90;
+    const x = 12 + Math.random() * maxX;
+    const y = (Math.random() * maxY) - 18;
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = Math.min(x, area.width - btn.width - 12) + 'px';
+    noBtn.style.top = (area.height * .66 + y) + 'px';
+    noBtn.style.transform = `rotate(${Math.random()*16-8}deg)`;
+  }
+
+  noBtn.addEventListener('pointerenter', moveNo);
+  noBtn.addEventListener('click', moveNo);
+  noBtn.addEventListener('touchstart', (event) => { event.preventDefault(); moveNo(); }, {passive:false});
+
+  function celebrate() {
+    question.classList.add('hidden');
+    success.style.display = 'block';
+    for (let i=0; i<85; i++) {
+      const bit = document.createElement('span');
+      bit.className = 'confetti';
+      bit.textContent = ['💗','💕','💖','✨','🌸'][Math.floor(Math.random()*5)];
+      bit.style.left = Math.random()*100 + 'vw';
+      bit.style.fontSize = (13 + Math.random()*22) + 'px';
+      bit.style.animationDuration = (2 + Math.random()*2.2) + 's';
+      bit.style.animationDelay = Math.random()*.7 + 's';
+      document.body.appendChild(bit);
+      setTimeout(() => bit.remove(), 5500);
+    }
+  }
+  yesBtn.addEventListener('click', celebrate);
+  document.getElementById('replay').addEventListener('click', () => {
+    success.style.display = 'none';
+    question.classList.remove('hidden');
+    noBtn.style.position = 'relative';
+    noBtn.style.left = '';
+    noBtn.style.top = '';
+    noBtn.style.transform = '';
+    attempts = 0;
+    message.textContent = 'Psst... there’s only one correct answer.';
+  });
+
+  // Floating background hearts
+  for (let i=0; i<16; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'sparkle';
+    heart.textContent = Math.random() > .5 ? '♡' : '✧';
+    heart.style.left = Math.random()*100 + 'vw';
+    heart.style.fontSize = (16 + Math.random()*25) + 'px';
+    heart.style.animationDuration = (7 + Math.random()*9) + 's';
+    heart.style.animationDelay = (-Math.random()*12) + 's';
+    document.body.appendChild(heart);
+  }
+</script>
+</body>
+</html>
